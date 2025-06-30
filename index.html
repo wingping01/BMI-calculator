@@ -1,0 +1,458 @@
+<!-- 这是BMI计算器的主文件示例 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMI计算器</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 配置Tailwind自定义颜色 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            secondary: '#10B981',
+            warning: '#F59E0B',
+            danger: '#EF4444',
+            info: '#6366F1',
+          },
+        },
+      }
+    }
+  </script>
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      .hover-lift {
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans">
+  <!-- 导航栏 -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa fa-balance-scale text-primary text-2xl"></i>
+        <h1 class="text-xl font-bold text-gray-800">健康助手</h1>
+      </div>
+      <div>
+        <button class="text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-question-circle text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    <section class="text-center mb-10">
+      <h2 class="text-[clamp(2rem,5vw,3rem)] font-bold text-gray-800 mb-4">BMI计算器</h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">身体质量指数是衡量人体胖瘦程度的常用指标，通过体重和身高的比例计算得出。</p>
+    </section>
+
+    <!-- 计算器卡片 -->
+    <section class="bg-white rounded-xl shadow-xl p-6 md:p-8 mb-10 hover-lift">
+      <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+        <i class="fa fa-calculator text-primary mr-3"></i>
+        输入您的信息
+      </h3>
+      
+      <form id="bmiForm" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="weight" class="block text-gray-700 font-medium mb-2">体重 (kg)</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fa fa-balance-scale text-gray-400"></i>
+              </div>
+              <input type="number" id="weight" name="weight" placeholder="例如: 65.5" 
+                class="pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/30 transition-all duration-200"
+                required>
+            </div>
+          </div>
+          
+          <div>
+            <label for="height" class="block text-gray-700 font-medium mb-2">身高 (cm)</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fa fa-arrows-v text-gray-400"></i>
+              </div>
+              <input type="number" id="height" name="height" placeholder="例如: 175.0" 
+                class="pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/30 transition-all duration-200"
+                required>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="age" class="block text-gray-700 font-medium mb-2">年龄</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fa fa-calendar text-gray-400"></i>
+              </div>
+              <input type="number" id="age" name="age" placeholder="例如: 30" 
+                class="pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/30 transition-all duration-200"
+                required>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">性别</label>
+            <div class="flex space-x-4">
+              <label class="inline-flex items-center">
+                <input type="radio" name="gender" value="male" checked 
+                  class="w-5 h-5 text-primary focus:ring-primary">
+                <span class="ml-2 text-gray-700 flex items-center">
+                  <i class="fa fa-male mr-1"></i> 男
+                </span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="radio" name="gender" value="female" 
+                  class="w-5 h-5 text-primary focus:ring-primary">
+                <span class="ml-2 text-gray-700 flex items-center">
+                  <i class="fa fa-female mr-1"></i> 女
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center">
+          <i class="fa fa-calculator mr-2"></i>
+          计算BMI
+        </button>
+      </form>
+    </section>
+
+    <!-- 结果显示区 -->
+    <section id="resultSection" class="bg-white rounded-xl shadow-xl p-6 md:p-8 mb-10 opacity-0 transform translate-y-8 transition-all duration-500" style="display: none;">
+      <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+        <i class="fa fa-bar-chart text-primary mr-3"></i>
+        您的BMI结果
+      </h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-blue-50 rounded-lg p-5 text-center">
+          <p class="text-gray-600 mb-1">BMI值</p>
+          <p id="bmiValue" class="text-4xl font-bold text-gray-800">24.5</p>
+          <p class="text-gray-500">kg/m²</p>
+        </div>
+        
+        <div class="bg-green-50 rounded-lg p-5 text-center">
+          <p class="text-gray-600 mb-1">健康状况</p>
+          <p id="bmiCategory" class="text-4xl font-bold text-green-600">正常</p>
+        </div>
+        
+        <div class="bg-indigo-50 rounded-lg p-5 text-center">
+          <p class="text-gray-600 mb-1">建议体重</p>
+          <p id="idealWeight" class="text-4xl font-bold text-gray-800">56.7 - 73.0 kg</p>
+        </div>
+      </div>
+      
+      <!-- BMI范围图表 -->
+      <div class="mb-8">
+        <div class="flex justify-between text-sm text-gray-600 mb-2">
+          <span>偏瘦</span>
+          <span>正常</span>
+          <span>过重</span>
+          <span>肥胖</span>
+        </div>
+        <div class="h-3 bg-gray-200 rounded-full overflow-hidden relative">
+          <div class="h-full bg-gradient-to-r from-blue-500 via-green-500 to-red-500" style="width: 100%;"></div>
+          <div id="bmiPointer" class="absolute top-0 h-full w-1 bg-white shadow-md" style="left: 45%;"></div>
+        </div>
+      </div>
+      
+      <!-- 健康建议 -->
+      <div class="bg-blue-50 border-l-4 border-primary p-5 mb-8 rounded-r-lg">
+        <h4 class="font-medium text-primary mb-2 flex items-center">
+          <i class="fa fa-lightbulb-o mr-2"></i>
+          健康建议
+        </h4>
+        <p id="healthAdvice" class="text-gray-700">
+          根据您的BMI值，您的身体状况良好。建议保持均衡饮食和适量运动，以维持健康体重。
+        </p>
+      </div>
+      
+      <button id="shareBtn" class="w-full bg-secondary hover:bg-secondary/90 text-white font-medium py-3 px-6 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center">
+        <i class="fa fa-share-alt mr-2"></i>
+        分享结果
+      </button>
+    </section>
+
+    <!-- BMI参考表 -->
+    <section class="bg-white rounded-xl shadow-xl p-6 md:p-8 hover-lift">
+      <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+        <i class="fa fa-table text-primary mr-3"></i>
+        BMI参考表
+      </h3>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead>
+            <tr>
+              <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BMI范围</th>
+              <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">健康状况</th>
+              <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">建议</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">低于18.5</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-medium">偏瘦</td>
+              <td class="px-6 py-4 text-sm text-gray-700">增加蛋白质摄入，适当进行力量训练</td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">18.5 - 23.9</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">正常</td>
+              <td class="px-6 py-4 text-sm text-gray-700">保持均衡饮食和适量运动</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">24 - 27.9</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600 font-medium">过重</td>
+              <td class="px-6 py-4 text-sm text-gray-700">减少高热量食物摄入，增加有氧运动</td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28.0 - 32.4</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-500 font-medium">轻度肥胖</td>
+              <td class="px-6 py-4 text-sm text-gray-700">严格控制饮食，增加运动量，建议咨询医生</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">32.5 - 37.4</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500 font-medium">中度肥胖</td>
+              <td class="px-6 py-4 text-sm text-gray-700">立即调整饮食结构，加强有氧运动。对于18-70周岁人群，建议咨询医生评估是否符合手术适应证：BMI≥32.5kg/m²，或BMI≥27.5kg/m²合并T2DM（无论T2DM内科治疗是否有效）；或BMI 27.5-32.5kg/m²且内科减重无效或合并肥胖症相关其他疾病且内科治疗无效。</td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">37.5 - 49.9</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">重度肥胖</td>
+              <td class="px-6 py-4 text-sm text-gray-700">严格遵循医生或营养师的指导，调整饮食和运动习惯。18-70周岁人群建议咨询医生评估手术可能性，手术适应证包括BMI≥32.5kg/m²，或BMI≥27.5kg/m²合并T2DM等。≥70周岁老年人群需综合评估后决定。<18周岁儿童青少年需满足特定条件并经多学科讨论后决定。考虑在医生监督下进行药物治疗或手术干预。定期进行体检，监测血压、血糖和血脂等指标。</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">50及以上</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-red-700 font-medium">极重度肥胖</td>
+              <td class="px-6 py-4 text-sm text-gray-700">立即寻求专业医疗帮助，由医生、营养师和运动专家组成的团队制定综合治疗方案。18-70周岁人群通常符合手术条件，≥70周岁需综合评估，<18周岁需满足特定条件并多学科讨论。可能需要考虑代谢手术等干预措施。同时，保持积极心态，逐步改变生活方式。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+      <p class="mb-4">© 2025 健康助手. 保留所有权利.</p>
+      <div class="flex justify-center space-x-6">
+        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fa fa-weibo text-xl"></i>
+        </a>
+        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fa fa-wechat text-xl"></i>
+        </a>
+        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fa fa-qq text-xl"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 分享模态框 -->
+  <div id="shareModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-semibold text-gray-800">分享BMI结果</h3>
+        <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+          <i class="fa fa-times text-xl"></i>
+        </button>
+      </div>
+      
+      <p class="text-gray-600 mb-6">选择分享方式:</p>
+      
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <button class="flex flex-col items-center p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors">
+          <i class="fa fa-wechat text-blue-600 text-2xl mb-2"></i>
+          <span class="text-sm text-gray-700">微信</span>
+        </button>
+        <button class="flex flex-col items-center p-3 rounded-lg bg-red-50 hover:bg-red-100 transition-colors">
+          <i class="fa fa-weibo text-red-600 text-2xl mb-2"></i>
+          <span class="text-sm text-gray-700">微博</span>
+        </button>
+        <button class="flex flex-col items-center p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors">
+          <i class="fa fa-qq text-blue-500 text-2xl mb-2"></i>
+          <span class="text-sm text-gray-700">QQ</span>
+        </button>
+        <button class="flex flex-col items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+          <i class="fa fa-link text-gray-600 text-2xl mb-2"></i>
+          <span class="text-sm text-gray-700">复制链接</span>
+        </button>
+      </div>
+      
+      <div class="bg-blue-50 p-4 rounded-lg mb-4">
+        <div class="flex items-center">
+          <i class="fa fa-info-circle text-blue-600 mr-2"></i>
+          <p class="text-sm text-gray-700">分享结果仅供参考，不能替代专业医疗建议。</p>
+        </div>
+      </div>
+      
+      <button id="cancelShare" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors">
+        取消
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // 获取DOM元素
+    const bmiForm = document.getElementById('bmiForm');
+    const resultSection = document.getElementById('resultSection');
+    const bmiValue = document.getElementById('bmiValue');
+    const bmiCategory = document.getElementById('bmiCategory');
+    const idealWeight = document.getElementById('idealWeight');
+    const bmiPointer = document.getElementById('bmiPointer');
+    const healthAdvice = document.getElementById('healthAdvice');
+    const shareBtn = document.getElementById('shareBtn');
+    const shareModal = document.getElementById('shareModal');
+    const modalContent = document.getElementById('modalContent');
+    const closeModal = document.getElementById('closeModal');
+    const cancelShare = document.getElementById('cancelShare');
+
+    // 计算BMI
+    bmiForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // 获取输入值
+      const weight = parseFloat(document.getElementById('weight').value);
+      const height = parseFloat(document.getElementById('height').value);
+      const age = parseInt(document.getElementById('age').value);
+      const gender = document.querySelector('input[name="gender"]:checked').value;
+      
+      // 验证输入
+      if (isNaN(weight) || isNaN(height) || isNaN(age)) {
+        alert('请输入有效的数值');
+        return;
+      }
+      
+      if (weight <= 0 || height <= 0 || age <= 0) {
+        alert('请输入正数');
+        return;
+      }
+      
+      // 计算BMI
+      const heightInMeters = height / 100;
+      const bmi = weight / (heightInMeters * heightInMeters);
+      
+      // 计算理想体重范围
+      const idealMin = 18.5 * (heightInMeters * heightInMeters);
+      const idealMax = 23.9 * (heightInMeters * heightInMeters);
+      
+      // 更新结果
+      bmiValue.textContent = bmi.toFixed(1);
+      idealWeight.textContent = `${idealMin.toFixed(1)} - ${idealMax.toFixed(1)} kg`;
+      
+      // 设置BMI指针位置
+      const minBMI = 10;
+      const maxBMI = 50;
+      const clampedBMI = Math.max(minBMI, Math.min(maxBMI, bmi));
+      const position = ((clampedBMI - minBMI) / (maxBMI - minBMI)) * 100;
+      bmiPointer.style.left = `${position}%`;
+      
+      // 根据BMI值设置健康状况和建议
+      let category, color, advice;
+      if (bmi < 18.5) {
+        category = "偏瘦";
+        color = "text-blue-600";
+        advice = "您的体重低于正常范围。建议增加蛋白质摄入，适当进行力量训练以增加肌肉量。同时，确保摄入足够的热量和营养，保持健康的生活方式。";
+      } else if (bmi < 24) {
+        category = "正常";
+        color = "text-green-600";
+        advice = "您的体重处于正常范围内。继续保持均衡的饮食和适量的运动，这对您的整体健康非常有益。";
+      } else if (bmi < 28) {
+        category = "过重";
+        color = "text-yellow-600";
+        advice = "您的体重略高于正常范围。建议减少高热量、高脂肪和高糖食物的摄入，增加有氧运动，如快走、跑步或游泳，每周至少150分钟。";
+      } else if (bmi < 32.5) {
+        category = "轻度肥胖";
+        color = "text-orange-500";
+        advice = "您的体重已经超过正常范围，属于轻度肥胖。建议严格控制饮食，减少碳水化合物和脂肪摄入，增加膳食纤维。每周进行至少150分钟的中等强度有氧运动，并结合力量训练。建议咨询医生或营养师制定个性化减重计划。";
+      } else if (bmi < 37.5) {
+        category = "中度肥胖";
+        color = "text-red-500";
+        advice = "您的体重已经达到中度肥胖水平。建议立即调整饮食结构，采用低热量、高蛋白质的饮食方案。每天进行至少30分钟的有氧运动，如快走、游泳或骑自行车。对于18-70周岁人群，建议咨询医生评估是否符合手术适应证：BMI≥32.5kg/m²，或BMI≥27.5kg/m²合并T2DM（无论T2DM内科治疗是否有效）；或BMI 27.5-32.5kg/m²且内科减重无效或合并肥胖症相关其他疾病且内科治疗无效。建议咨询医生，制定科学的减重计划，并定期监测健康指标。";
+      } else if (bmi < 50) {
+        category = "重度肥胖";
+        color = "text-red-600";
+        advice = "您的体重已经达到重度肥胖水平，健康风险显著增加。建议严格遵循医生或营养师的指导，调整饮食和运动习惯。18-70周岁人群建议咨询医生评估手术可能性，手术适应证包括BMI≥32.5kg/m²，或BMI≥27.5kg/m²合并T2DM等。≥70周岁老年人群需综合评估后决定。<18周岁儿童青少年需满足特定条件并经多学科讨论后决定。考虑在医生监督下进行药物治疗或手术干预。定期进行体检，监测血压、血糖和血脂等指标。";
+      } else {
+        category = "极重度肥胖";
+        color = "text-red-700";
+        advice = "您的体重已经达到极重度肥胖水平，严重威胁健康。建议立即寻求专业医疗帮助，由医生、营养师和运动专家组成的团队制定综合治疗方案。18-70周岁人群通常符合手术条件，≥70周岁需综合评估，<18周岁需满足特定条件并多学科讨论。可能需要考虑代谢手术等干预措施。同时，保持积极心态，逐步改变生活方式。";
+      }
+      
+      bmiCategory.textContent = category;
+      bmiCategory.className = `text-4xl font-bold ${color}`;
+      healthAdvice.textContent = advice;
+      
+      // 显示结果区域并添加动画
+      resultSection.style.display = 'block';
+      setTimeout(() => {
+        resultSection.classList.remove('opacity-0', 'translate-y-8');
+      }, 10);
+      
+      // 平滑滚动到结果区域
+      resultSection.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // 分享模态框动画
+    shareBtn.addEventListener('click', function() {
+      shareModal.classList.remove('hidden');
+      setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    });
+
+    function closeModalFunc() {
+      modalContent.classList.remove('scale-100', 'opacity-100');
+      modalContent.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        shareModal.classList.add('hidden');
+      }, 300);
+    }
+
+    closeModal.addEventListener('click', closeModalFunc);
+    cancelShare.addEventListener('click', closeModalFunc);
+    shareModal.addEventListener('click', function(e) {
+      if (e.target === shareModal) {
+        closeModalFunc();
+      }
+    });
+
+    // 添加页面加载动画
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.classList.add('opacity-0');
+      setTimeout(() => {
+        document.body.classList.add('transition-opacity', 'duration-500');
+        document.body.classList.remove('opacity-0');
+      }, 100);
+    });
+  </script>
+</body>
+</html>
